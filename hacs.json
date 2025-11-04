@@ -1,8 +1,4 @@
 {
-  "name": "Birthday Progress",
-  "content_in_root": false,
-  "filename": "birthday_progress",
-  "domain": "birthday_progress",
-  "homeassistant": "2023.1.0"
+  "name": "Birthday Progress"
 }
 
