@@ -226,6 +226,82 @@ class BirthdayProgressSensor(
 
         return f"{days} days, {hours:02d}:{minutes:02d}:{seconds:02d}"
 
+    def _calculate_detailed_time_breakdown(self, time_delta: timedelta) -> dict[str, int]:
+        """
+        Calculate detailed time breakdown: years, months, weeks, days, hours, minutes, seconds.
+
+        Args:
+            time_delta: Time delta to break down
+
+        Returns:
+            Dictionary with years, months, weeks, days, hours, minutes, seconds
+        """
+        total_seconds = int(time_delta.total_seconds())
+        total_days = time_delta.days
+
+        # Calculate years (approximate)
+        years = total_days // 365
+        remaining_days = total_days % 365
+
+        # Calculate months (approximate, using 30.44 days per month average)
+        months = remaining_days // 30
+        remaining_days_after_months = remaining_days % 30
+
+        # Calculate weeks
+        weeks = remaining_days_after_months // 7
+        days = remaining_days_after_months % 7
+
+        # Calculate hours, minutes, seconds
+        hours = (total_seconds % 86400) // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
+
+        return {
+            "years": years,
+            "months": months,
+            "weeks": weeks,
+            "days": days,
+            "hours": hours,
+            "minutes": minutes,
+            "seconds": seconds,
+        }
+
+    def _format_detailed_time(self, breakdown: dict[str, int]) -> str:
+        """
+        Format detailed time breakdown as human-readable string.
+
+        Args:
+            breakdown: Dictionary with time components
+
+        Returns:
+            Formatted string (e.g., "8 years, 2 months, 1 week, 4 days, 23 hours, 34 minutes, and 8 seconds")
+        """
+        parts = []
+        
+        if breakdown["years"] > 0:
+            parts.append(f"{breakdown['years']} year{'s' if breakdown['years'] != 1 else ''}")
+        if breakdown["months"] > 0:
+            parts.append(f"{breakdown['months']} month{'s' if breakdown['months'] != 1 else ''}")
+        if breakdown["weeks"] > 0:
+            parts.append(f"{breakdown['weeks']} week{'s' if breakdown['weeks'] != 1 else ''}")
+        if breakdown["days"] > 0:
+            parts.append(f"{breakdown['days']} day{'s' if breakdown['days'] != 1 else ''}")
+        if breakdown["hours"] > 0:
+            parts.append(f"{breakdown['hours']} hour{'s' if breakdown['hours'] != 1 else ''}")
+        if breakdown["minutes"] > 0:
+            parts.append(f"{breakdown['minutes']} minute{'s' if breakdown['minutes'] != 1 else ''}")
+        if breakdown["seconds"] > 0 or len(parts) == 0:
+            parts.append(f"{breakdown['seconds']} second{'s' if breakdown['seconds'] != 1 else ''}")
+
+        if len(parts) == 0:
+            return "0 seconds"
+        elif len(parts) == 1:
+            return parts[0]
+        elif len(parts) == 2:
+            return f"{parts[0]} and {parts[1]}"
+        else:
+            return ", ".join(parts[:-1]) + ", and " + parts[-1]
+
     def _calculate_progress_percentage(self) -> float:
         """
         Calculate progress percentage toward next birthday (0-100).
@@ -344,7 +420,18 @@ class BirthdayProgressSensor(
         Returns:
             Dictionary of extra attributes
         """
+        now = dt_util.now()
         next_birthday = self._calculate_next_birthday()
+        last_birthday = self._calculate_last_birthday()
+        
+        # Calculate time since birth
+        time_since_birth = now - self._birth_datetime
+        time_since_breakdown = self._calculate_detailed_time_breakdown(time_since_birth)
+        
+        # Calculate time until next birthday
+        time_until_next = next_birthday - now
+        time_until_breakdown = self._calculate_detailed_time_breakdown(time_until_next)
+        
         return {
             ATTR_AGE_EXACT: self._calculate_age_exact(),
             ATTR_NEXT_BIRTHDAY: next_birthday.isoformat(),
@@ -353,6 +440,10 @@ class BirthdayProgressSensor(
             "name": self._name,
             "birth_date": self._birth_date_str,
             "birth_time": self._birth_time_str or "Not specified",
+            "birth_datetime": self._birth_datetime.strftime("%d/%m/%Y %H:%M:%S"),
+            "next_birthday_datetime": next_birthday.strftime("%d/%m/%Y %H:%M:%S"),
+            "time_since_birth": self._format_detailed_time(time_since_breakdown),
+            "time_until_next_detailed": self._format_detailed_time(time_until_breakdown),
         }
 
     @property

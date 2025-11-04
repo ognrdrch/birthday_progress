@@ -1,6 +1,6 @@
 # Birthday Progress Card
 
-A custom Lovelace card for displaying birthday progress with beautiful circular or horizontal progress bars.
+A custom Lovelace card for displaying birthday information in a clean, two-section layout showing time since birth and time until next birthday.
 
 ## Installation
 
@@ -33,20 +33,12 @@ type: custom:birthday-progress-card
 entity: sensor.john_birthday_progress
 ```
 
-### With Custom Name
+### With Custom Next Birthday Title
 
 ```yaml
 type: custom:birthday-progress-card
-entity: sensor.john_birthday_progress
-name: John's Birthday
-```
-
-### Horizontal Progress Bar
-
-```yaml
-type: custom:birthday-progress-card
-entity: sensor.jane_birthday_progress
-progress_type: horizontal
+entity: sensor.milan_birthday_progress
+next_birthday_title: "Milan's nächster Geburtstag"
 ```
 
 ### Configuration Options
@@ -55,20 +47,46 @@ progress_type: horizontal
 |--------|------|---------|-------------|
 | `entity` | string | **Required** | Entity ID of the birthday progress sensor |
 | `name` | string | Optional | Custom name to display (overrides entity name) |
-| `progress_type` | string | `circular` | Type of progress bar: `circular` or `horizontal` |
+| `next_birthday_title` | string | `"{name}'s Next Birthday"` | Custom title for next birthday section |
 
 ## Features
 
-- **Circular Progress Bar**: Beautiful animated circular progress indicator
-- **Horizontal Progress Bar**: Linear progress bar option
-- **Real-time Updates**: Automatically updates as the sensor changes
+- **Two-Section Layout**: Clean design showing birth information and next birthday countdown
+- **Detailed Time Breakdown**: Shows years, months, weeks, days, hours, minutes, and seconds
+- **Real-time Updates**: Automatically updates every second as the sensor changes
 - **Theme Support**: Automatically adapts to light/dark mode
 - **Responsive Design**: Works on mobile and desktop
-- **Information Display**: Shows exact age, time until next birthday, and next birthday date
+- **Date/Time Display**: Shows birth date/time and next birthday date/time
 
-## Screenshots
+## Card Layout
 
-_Add screenshots here showing the card in action_
+The card displays two sections:
+
+**Top Section:**
+- Person's name
+- Birth date and time (DD/MM/YYYY HH:MM:SS)
+- Time since birth (detailed breakdown)
+
+**Bottom Section:**
+- Next birthday title (customizable)
+- Next birthday date and time
+- Time until next birthday (detailed breakdown)
+
+## Example
+
+```yaml
+type: custom:birthday-progress-card
+entity: sensor.milan_birthday_progress
+next_birthday_title: "Milan's nächster Geburtstag"
+```
+
+This displays:
+- **Milan**
+- **23/08/2017 20:27:00**
+- Time since event: 8 years, 2 months, 1 week, 4 days, 23 hours, 34 minutes, and 8 seconds
+- **Milan's nächster Geburtstag**
+- **23/08/2026 20:27:00**
+- Time until event: 9 months, 2 weeks, 5 days, 25 minutes, and 52 seconds
 
 ## Support
 

@@ -1,8 +1,8 @@
 /**
  * Birthday Progress Card for Home Assistant Lovelace
  * 
- * A custom card that displays birthday progress with a circular or horizontal
- * progress bar, showing age, time until next birthday, and progress percentage.
+ * A custom card that displays birthday information in a clean two-section layout
+ * showing time since birth and time until next birthday.
  */
 
 import { LitElement, html, css } from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
@@ -24,162 +24,85 @@ class BirthdayProgressCard extends LitElement {
       }
 
       .card {
-        background: var(--card-background-color, #ffffff);
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: var(--card-background-color, #424242);
+        border-radius: 8px;
+        padding: 0;
+        overflow: hidden;
+        color: var(--primary-text-color, #ffffff);
       }
 
-      .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      .section {
+        padding: 20px;
       }
 
-      .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
+      .section-top {
+        padding-bottom: 20px;
+      }
+
+      .section-bottom {
+        padding-top: 20px;
+        border-top: 1px solid var(--divider-color, rgba(255, 255, 255, 0.12));
       }
 
       .name {
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--primary-text-color, #000000);
-        margin: 0;
-      }
-
-      .progress-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 20px 0;
-      }
-
-      .circular-progress {
-        position: relative;
-        width: 200px;
-        height: 200px;
-      }
-
-      .circular-progress svg {
-        transform: rotate(-90deg);
-        width: 100%;
-        height: 100%;
-      }
-
-      .circular-progress-circle-bg {
-        fill: none;
-        stroke: var(--divider-color, #e0e0e0);
-        stroke-width: 12;
-      }
-
-      .circular-progress-circle {
-        fill: none;
-        stroke: var(--accent-color, #03a9f4);
-        stroke-width: 12;
-        stroke-linecap: round;
-        stroke-dasharray: 565.48;
-        transition: stroke-dashoffset 0.5s ease;
-        filter: drop-shadow(0 0 8px rgba(3, 169, 244, 0.5));
-      }
-
-      .circular-progress-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-      }
-
-      .progress-percentage {
-        font-size: 36px;
+        font-size: 20px;
         font-weight: 700;
-        color: var(--primary-text-color, #000000);
-        line-height: 1;
+        color: var(--primary-text-color, #ffffff);
+        margin: 0 0 12px 0;
+        line-height: 1.2;
       }
 
-      .progress-label {
-        font-size: 14px;
-        color: var(--secondary-text-color, #666666);
-        margin-top: 4px;
+      .next-birthday-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-text-color, #ffffff);
+        margin: 0 0 12px 0;
+        line-height: 1.2;
       }
 
-      .horizontal-progress {
-        width: 100%;
-        height: 24px;
-        background: var(--divider-color, #e0e0e0);
-        border-radius: 12px;
-        overflow: hidden;
-        position: relative;
-        margin: 20px 0;
-      }
-
-      .horizontal-progress-bar {
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          var(--accent-color, #03a9f4) 0%,
-          var(--accent-color, #03a9f4) 50%,
-          var(--primary-color, #2196f3) 100%
-        );
-        border-radius: 12px;
-        transition: width 0.5s ease;
-        box-shadow: 0 2px 8px rgba(3, 169, 244, 0.3);
-      }
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-top: 24px;
-      }
-
-      .info-item {
-        background: var(--secondary-background-color, #f5f5f5);
-        padding: 16px;
-        border-radius: 8px;
-        text-align: center;
-      }
-
-      .info-label {
-        font-size: 12px;
-        color: var(--secondary-text-color, #666666);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-      }
-
-      .info-value {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--primary-text-color, #000000);
-      }
-
-      .age-exact {
-        font-family: 'Courier New', monospace;
+      .datetime {
         font-size: 16px;
+        color: var(--primary-text-color, #ffffff);
+        margin: 0 0 8px 0;
+        font-family: monospace;
+      }
+
+      .time-label {
+        font-size: 14px;
+        color: var(--secondary-text-color, rgba(255, 255, 255, 0.7));
+        margin: 8px 0 4px 0;
+      }
+
+      .time-value {
+        font-size: 14px;
+        color: var(--primary-text-color, #ffffff);
+        line-height: 1.5;
       }
 
       .error {
         color: var(--error-color, #f44336);
         text-align: center;
         padding: 20px;
+        background: var(--card-background-color, #424242);
+        border-radius: 8px;
       }
 
       @media (max-width: 600px) {
-        .circular-progress {
-          width: 150px;
-          height: 150px;
+        .section {
+          padding: 16px;
         }
 
-        .progress-percentage {
-          font-size: 28px;
+        .name,
+        .next-birthday-title {
+          font-size: 18px;
         }
 
-        .info-grid {
-          grid-template-columns: 1fr;
+        .datetime {
+          font-size: 14px;
+        }
+
+        .time-value {
+          font-size: 13px;
         }
       }
     `;
@@ -193,7 +116,7 @@ class BirthdayProgressCard extends LitElement {
   }
 
   getCardSize() {
-    return 4;
+    return 3;
   }
 
   connectedCallback() {
@@ -225,12 +148,13 @@ class BirthdayProgressCard extends LitElement {
     };
   }
 
-  _calculateCircumference(radius) {
-    return 2 * Math.PI * radius;
-  }
-
-  _calculateProgressOffset(percentage, circumference) {
-    return circumference - (percentage / 100) * circumference;
+  _formatNextBirthdayTitle(name) {
+    // Support German "nächster Geburtstag" or use config title
+    if (this.config.next_birthday_title) {
+      return this.config.next_birthday_title;
+    }
+    // Default to English
+    return `${name}'s Next Birthday`;
   }
 
   render() {
@@ -246,75 +170,27 @@ class BirthdayProgressCard extends LitElement {
       `;
     }
 
-    const progress = parseFloat(this._state.state) || 0;
     const attributes = this._state.attributes;
-    const progressType = this.config.progress_type || "circular";
-    const radius = 90;
-    const circumference = this._calculateCircumference(radius);
-    const offset = this._calculateProgressOffset(progress, circumference);
+    const name = attributes.name || this.config.name || "Unknown";
+    const birthDatetime = attributes.birth_datetime || attributes.birth_date || "N/A";
+    const nextBirthdayDatetime = attributes.next_birthday_datetime || attributes.next_birthday || "N/A";
+    const timeSinceBirth = attributes.time_since_birth || "N/A";
+    const timeUntilNext = attributes.time_until_next_detailed || attributes.time_until_next || "N/A";
 
     return html`
       <div class="card">
-        <div class="card-header">
-          <h2 class="name">${attributes.name || this.config.name || "Birthday"}</h2>
+        <div class="section section-top">
+          <div class="name">${name}</div>
+          <div class="datetime">${birthDatetime}</div>
+          <div class="time-label">Time since event:</div>
+          <div class="time-value">${timeSinceBirth}</div>
         </div>
-
-        ${progressType === "circular"
-          ? html`
-              <div class="progress-container">
-                <div class="circular-progress">
-                  <svg viewBox="0 0 200 200">
-                    <circle
-                      class="circular-progress-circle-bg"
-                      cx="100"
-                      cy="100"
-                      r="${radius}"
-                    ></circle>
-                    <circle
-                      class="circular-progress-circle"
-                      cx="100"
-                      cy="100"
-                      r="${radius}"
-                      stroke-dashoffset="${offset}"
-                      stroke-dasharray="${circumference}"
-                    ></circle>
-                  </svg>
-                  <div class="circular-progress-text">
-                    <div class="progress-percentage">${progress.toFixed(2)}%</div>
-                    <div class="progress-label">Progress</div>
-                  </div>
-                </div>
-              </div>
-            `
-          : html`
-              <div class="horizontal-progress">
-                <div
-                  class="horizontal-progress-bar"
-                  style="width: ${progress}%"
-                ></div>
-              </div>
-              <div style="text-align: center; margin-top: 8px;">
-                <span class="progress-percentage">${progress.toFixed(2)}%</span>
-              </div>
-            `}
-
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-label">Exact Age</div>
-            <div class="info-value age-exact">${attributes.age_exact || "N/A"}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Time Until Next</div>
-            <div class="info-value">${attributes.time_until_next || "N/A"}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Next Birthday</div>
-            <div class="info-value">
-              ${attributes.next_birthday
-                ? new Date(attributes.next_birthday).toLocaleDateString()
-                : "N/A"}
-            </div>
-          </div>
+        
+        <div class="section section-bottom">
+          <div class="next-birthday-title">${this._formatNextBirthdayTitle(name)}</div>
+          <div class="datetime">${nextBirthdayDatetime}</div>
+          <div class="time-label">Time until event:</div>
+          <div class="time-value">${timeUntilNext}</div>
         </div>
       </div>
     `;
@@ -322,4 +198,3 @@ class BirthdayProgressCard extends LitElement {
 }
 
 customElements.define("birthday-progress-card", BirthdayProgressCard);
-
