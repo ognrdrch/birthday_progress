@@ -8,7 +8,8 @@
   "requirements": [],
   "config_flow": true,
   "iot_class": "local_polling",
-  "dependencies": []
+  "dependencies": [],
+  "after_dependencies": []
 }
 
 
