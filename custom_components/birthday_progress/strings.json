@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Birthday Entry",
+        "description": "Enter the person's information",
+        "data": {
+          "name": "Name",
+          "birth_date": "Birth Date",
+          "birth_time": "Birth Time (optional)"
+        }
+      },
+      "edit": {
+        "title": "Edit Birthday Entry",
+        "description": "Update the person's information",
+        "data": {
+          "name": "Name",
+          "birth_date": "Birth Date",
+          "birth_time": "Birth Time (optional)"
+        }
+      }
+    },
+    "error": {
+      "invalid_date": "Invalid date format. Please use YYYY-MM-DD.",
+      "invalid_time": "Invalid time format. Please use HH:MM:SS.",
+      "future_date": "Birth date cannot be in the future.",
+      "name_required": "Name is required.",
+      "date_required": "Birth date is required."
+    },
+    "abort": {
+      "already_configured": "This person is already configured."
+    }
+  }
+}
+
+
