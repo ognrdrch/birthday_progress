@@ -1,0 +1,55 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Geburtstag hinzufügen",
+        "description": "Geben Sie die Informationen der Person ein, um den Geburtstagsfortschritt zu verfolgen.",
+        "data": {
+          "name": "Name",
+          "birth_date": "Geburtsdatum (TT.MM.JJJJ)",
+          "birth_time": "Geburtszeit (HH:MM:SS, optional)"
+        }
+      },
+      "edit": {
+        "title": "Geburtstag bearbeiten",
+        "description": "Aktualisieren Sie die Geburtstagsinformationen der Person.",
+        "data": {
+          "name": "Name",
+          "birth_date": "Geburtsdatum (TT.MM.JJJJ)",
+          "birth_time": "Geburtszeit (HH:MM:SS, optional)"
+        }
+      }
+    },
+    "error": {
+      "invalid_date": "Ungültiges Datumsformat. Bitte verwenden Sie TT.MM.JJJJ.",
+      "invalid_time": "Ungültiges Zeitformat. Bitte verwenden Sie HH:MM:SS oder HH:MM.",
+      "future_date": "Das Geburtsdatum darf nicht in der Zukunft liegen.",
+      "name_required": "Name ist erforderlich.",
+      "date_required": "Geburtsdatum ist erforderlich.",
+      "unknown": "Ein unbekannter Fehler ist aufgetreten."
+    },
+    "abort": {
+      "already_configured": "Diese Person ist bereits konfiguriert.",
+      "not_configured": "Dieser Eintrag ist nicht konfiguriert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Geburtstag bearbeiten",
+        "description": "Aktualisieren Sie die Geburtstagsinformationen.",
+        "data": {
+          "birth_date": "Geburtsdatum (TT.MM.JJJJ)",
+          "birth_time": "Geburtszeit (HH:MM:SS, optional)"
+        }
+      }
+    },
+    "error": {
+      "invalid_date": "Ungültiges Datumsformat. Bitte verwenden Sie TT.MM.JJJJ.",
+      "invalid_time": "Ungültiges Zeitformat. Bitte verwenden Sie HH:MM:SS oder HH:MM.",
+      "future_date": "Das Geburtsdatum darf nicht in der Zukunft liegen.",
+      "date_required": "Geburtsdatum ist erforderlich."
+    }
+  }
+}
+

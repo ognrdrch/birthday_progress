@@ -6,7 +6,7 @@
         "description": "Enter the person's information to track their birthday progress.",
         "data": {
           "name": "Name",
-          "birth_date": "Birth Date (YYYY-MM-DD)",
+          "birth_date": "Birth Date (DD.MM.YYYY)",
           "birth_time": "Birth Time (HH:MM:SS, optional)"
         }
       },
@@ -15,13 +15,13 @@
         "description": "Update the person's birthday information.",
         "data": {
           "name": "Name",
-          "birth_date": "Birth Date (YYYY-MM-DD)",
+          "birth_date": "Birth Date (DD.MM.YYYY)",
           "birth_time": "Birth Time (HH:MM:SS, optional)"
         }
       }
     },
     "error": {
-      "invalid_date": "Invalid date format. Please use YYYY-MM-DD.",
+      "invalid_date": "Invalid date format. Please use DD.MM.YYYY.",
       "invalid_time": "Invalid time format. Please use HH:MM:SS or HH:MM.",
       "future_date": "Birth date cannot be in the future.",
       "name_required": "Name is required.",
@@ -39,13 +39,13 @@
         "title": "Edit Birthday Entry",
         "description": "Update the birthday information.",
         "data": {
-          "birth_date": "Birth Date (YYYY-MM-DD)",
+          "birth_date": "Birth Date (DD.MM.YYYY)",
           "birth_time": "Birth Time (HH:MM:SS, optional)"
         }
       }
     },
     "error": {
-      "invalid_date": "Invalid date format. Please use YYYY-MM-DD.",
+      "invalid_date": "Invalid date format. Please use DD.MM.YYYY.",
       "invalid_time": "Invalid time format. Please use HH:MM:SS or HH:MM.",
       "future_date": "Birth date cannot be in the future.",
       "date_required": "Birth date is required."

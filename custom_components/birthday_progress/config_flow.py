@@ -22,24 +22,69 @@ from .const import CONF_BIRTH_DATE, CONF_BIRTH_TIME, CONF_NAME, DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-def validate_date(date_str: str) -> bool:
+def parse_german_date(date_str: str) -> str:
     """
-    Validate date string format (YYYY-MM-DD).
+    Parse German date format (DD.MM.YYYY) and convert to YYYY-MM-DD.
+
+    Args:
+        date_str: Date string in DD.MM.YYYY or YYYY-MM-DD format
+
+    Returns:
+        Date string in YYYY-MM-DD format
+
+    Raises:
+        ValueError: If date format is invalid
+    """
+    date_str = date_str.strip()
+    
+    # Try German format DD.MM.YYYY first
+    if "." in date_str and len(date_str.split(".")) == 3:
+        try:
+            parts = date_str.split(".")
+            if len(parts) != 3:
+                raise ValueError("Invalid date format")
+            day, month, year = parts
+            # Convert to YYYY-MM-DD
+            return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+        except (ValueError, IndexError) as err:
+            raise ValueError(f"Invalid German date format (DD.MM.YYYY): {err}") from err
+    
+    # Try ISO format YYYY-MM-DD (backwards compatibility)
+    if "-" in date_str and len(date_str.split("-")) == 3:
+        parts = date_str.split("-")
+        if len(parts) == 3 and len(parts[0]) == 4:
+            return date_str  # Already in YYYY-MM-DD format
+    
+    raise ValueError("Date must be in DD.MM.YYYY or YYYY-MM-DD format")
+
+
+def validate_date(date_str: str) -> str:
+    """
+    Validate date string format (DD.MM.YYYY or YYYY-MM-DD) and convert to YYYY-MM-DD.
 
     Args:
         date_str: Date string to validate
 
     Returns:
-        True if valid, raises ValueError otherwise
+        Date string in YYYY-MM-DD format
+
+    Raises:
+        ValueError: If date format is invalid or date is in the future
     """
     try:
-        date_obj = dt_util.parse_date(date_str)
+        # Convert to YYYY-MM-DD format
+        iso_date = parse_german_date(date_str)
+        
+        # Parse the ISO date
+        date_obj = dt_util.parse_date(iso_date)
         if date_obj is None:
             raise ValueError("Invalid date format")
+        
         # Check if date is in the future
         if date_obj > dt_util.now().date():
             raise ValueError("Birth date cannot be in the future")
-        return True
+        
+        return iso_date
     except (ValueError, TypeError) as err:
         raise ValueError(f"Invalid date format: {err}") from err
 
@@ -94,12 +139,15 @@ class BirthdayProgressConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if not name:
                     errors[CONF_NAME] = "name_required"
 
-                # Validate date
+                # Validate date and convert to ISO format
                 birth_date = user_input.get(CONF_BIRTH_DATE, "")
                 if not birth_date:
                     errors[CONF_BIRTH_DATE] = "date_required"
                 else:
-                    validate_date(birth_date)
+                    try:
+                        birth_date = validate_date(birth_date)  # Returns ISO format
+                    except ValueError:
+                        errors[CONF_BIRTH_DATE] = "invalid_date"
 
                 # Validate time (optional)
                 birth_time = user_input.get(CONF_BIRTH_TIME, "")
@@ -136,10 +184,24 @@ class BirthdayProgressConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
 
         # Show form
+        # Convert stored ISO date back to German format for display
+        display_date = ""
+        if user_input and user_input.get(CONF_BIRTH_DATE):
+            stored_date = user_input.get(CONF_BIRTH_DATE)
+            # If it's in ISO format, convert to German format for display
+            if "-" in stored_date and len(stored_date.split("-")) == 3:
+                parts = stored_date.split("-")
+                if len(parts[0]) == 4:  # YYYY-MM-DD
+                    display_date = f"{parts[2]}.{parts[1]}.{parts[0]}"
+                else:
+                    display_date = stored_date
+            else:
+                display_date = stored_date
+        
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_NAME, default=user_input.get(CONF_NAME, "") if user_input else ""): str,
-                vol.Required(CONF_BIRTH_DATE, default=user_input.get(CONF_BIRTH_DATE, "") if user_input else ""): str,
+                vol.Required(CONF_BIRTH_DATE, default=display_date, description={"suffix": "Format: DD.MM.YYYY"}): str,
                 vol.Optional(CONF_BIRTH_TIME, default=user_input.get(CONF_BIRTH_TIME, "") if user_input else ""): str,
             }
         )
@@ -207,12 +269,15 @@ class BirthdayProgressOptionsFlow(config_entries.OptionsFlow):
 
         if user_input is not None:
             try:
-                # Validate date
+                # Validate date and convert to ISO format
                 birth_date = user_input.get(CONF_BIRTH_DATE, "")
                 if not birth_date:
                     errors[CONF_BIRTH_DATE] = "date_required"
                 else:
-                    validate_date(birth_date)
+                    try:
+                        birth_date = validate_date(birth_date)  # Returns ISO format
+                    except ValueError:
+                        errors[CONF_BIRTH_DATE] = "invalid_date"
 
                 # Validate time (optional)
                 birth_time = user_input.get(CONF_BIRTH_TIME, "")
@@ -247,10 +312,22 @@ class BirthdayProgressOptionsFlow(config_entries.OptionsFlow):
 
         # Show form with current values
         current_data = self.config_entry.data
+        # Convert stored ISO date back to German format for display
+        stored_date = current_data.get(CONF_BIRTH_DATE, "")
+        display_date = ""
+        if stored_date and "-" in stored_date:
+            parts = stored_date.split("-")
+            if len(parts) == 3 and len(parts[0]) == 4:  # YYYY-MM-DD
+                display_date = f"{parts[2]}.{parts[1]}.{parts[0]}"
+            else:
+                display_date = stored_date
+        else:
+            display_date = stored_date
+        
         data_schema = vol.Schema(
             {
                 vol.Required(
-                    CONF_BIRTH_DATE, default=current_data.get(CONF_BIRTH_DATE, "")
+                    CONF_BIRTH_DATE, default=display_date, description={"suffix": "Format: DD.MM.YYYY"}
                 ): str,
                 vol.Optional(
                     CONF_BIRTH_TIME, default=current_data.get(CONF_BIRTH_TIME, "")
